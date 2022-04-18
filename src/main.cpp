@@ -27,6 +27,8 @@ void initialize() {
   armRot.reverse();
 
 	Task armControlTask(armControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Arm Control Task");
+	Task tilterControlTask(tilterControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Arm Control Task");
+	Task intakeTask(intakeControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Intake Control Task");
 }
 
 /**
@@ -106,7 +108,6 @@ void opcontrol() {
 			right = power - turn;
 		}
 
-		intake.move((master.get_digital(DIGITAL_R1) - master.get_digital(DIGITAL_R2))*127);
 
 		FL.move(left);
 		ML.move(left);
@@ -114,6 +115,14 @@ void opcontrol() {
 		FR.move(right);
 		MR.move(right);
 		BR.move(right);
+
+		setIntake((master.get_digital(DIGITAL_R1) - master.get_digital(DIGITAL_R2))*127);
+
+		if(master.get_digital_new_press(DIGITAL_UP)) toggleTilterState();
+		if(master.get_digital_new_press(DIGITAL_DOWN)) toggleClampState();
+		if(master.get_digital_new_press(DIGITAL_X)) toggleNeedleTilterState();
+		if(master.get_digital_new_press(DIGITAL_B)) toggleNeedleState();
+
 
 		delay(5);
   }

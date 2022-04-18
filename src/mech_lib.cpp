@@ -1,12 +1,13 @@
 #include "main.h"
 
 // Arm control
-const double armHeights[] = {995, 1860, 2400};
+const double armHeights[] = {3648, 1860, 2400};
 double armTarg = armHeights[0], armKP = 0.5;
-bool needleState = LOW, needleTilterState = LOW, clampState = LOW;
+bool needleState = LOW, needleTilterState = HIGH, clampState = LOW;
 
 void armControl(void*ignore) {
   Motor arm(armPort);
+  // arm.set_brake_mode(E_MOTOR_BRAKE_HOLD);
   ADIDigitalOut needleTilter(needleTilterPort);
   ADIDigitalOut needle(needlePort);
   ADIDigitalOut clamp(clampPort);
@@ -14,8 +15,8 @@ void armControl(void*ignore) {
 
   while(true) {
     double armError = armTarg - armRot.get_position();
-    arm.move(armError*armKP);
-    //printf("Target: %f, Potentiometer: %d, Error: %f\n", armTarg, potentiometer.get_value(), armError);
+    // arm.move(armError*armKP);
+    printf("Target: %f, Potentiometer: %d, Error: %f\n", armTarg, armRot.get_position(), armError);
 
     needle.set_value(needleState);
     needleTilter.set_value(needleTilterState);
@@ -34,10 +35,10 @@ void setNeedleTilterState(bool state) {needleTilterState = state;}
 void toggleNeedleTilterState() {needleTilterState = !needleTilterState;}
 
 void setClampState(bool state) {clampState = state;}
-void toggleClampState() {clampState = !needleState;}
+void toggleClampState() {clampState = !clampState;}
 
 // Tilter control
-bool tilterState;
+bool tilterState = LOW;
 void tilterControl(void*ignore) {
   ADIDigitalOut lTilter(lTilterPort);
 	ADIDigitalOut rTilter(rTilterPort);
@@ -51,7 +52,7 @@ void tilterControl(void*ignore) {
 }
 
 void setTilterState(bool state) {tilterState = state;}
-void toggleTilterState(bool state) {tilterState = !tilterState;}
+void toggleTilterState() {tilterState = !tilterState;}
 
 // Intake control
 double intakeTarg = 0;

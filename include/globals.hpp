@@ -9,6 +9,9 @@
 #define MRPort 7
 #define BRPort 2
 
+// Port expander
+#define expanderPort 12
+
 // Mech Ports
 #define armPort 8
 #define intakePort 10
@@ -17,14 +20,15 @@
 #define needleTilterPort 3
 #define needlePort 4
 #define clampPort 5
-#define lTilterPort 1
-#define rTilterPort 2
+#define lTilterPort {{expanderPort, 1}}
+#define rTilterPort {{expanderPort, 2}}
 
 // Sensor ports
+#define imuPort 11
 #define armRotPort 1
 #define encdRPort 7
-//{SMART_PORT, PORT_TOP, PORT_BOTTOM}
 #define encdSPort 1
-#define imuPort 11
+
+
 
 #endif

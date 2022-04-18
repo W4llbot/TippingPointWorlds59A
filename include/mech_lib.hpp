@@ -14,7 +14,7 @@ void toggleClampState();
 
 void tilterControl(void*ignore);
 void setTilterState(bool state);
-void toggleTilterState(bool state);
+void toggleTilterState();
 
 void intakeControl(void*ignore);
 void setIntake(double pow);
