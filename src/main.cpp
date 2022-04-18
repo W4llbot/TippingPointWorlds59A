@@ -15,6 +15,18 @@ void initialize() {
 	Motor BR(BRPort, E_MOTOR_GEARSET_06, false, E_MOTOR_ENCODER_DEGREES);
 
 	Motor intake(intakePort, E_MOTOR_GEARSET_06, true, E_MOTOR_ENCODER_DEGREES);
+	Motor arm(armPort, E_MOTOR_GEARSET_36, true, E_MOTOR_ENCODER_DEGREES);
+
+	ADIDigitalIn needleTilter(needleTilterPort);
+	ADIDigitalIn needle(needlePort);
+	ADIDigitalIn clamp(clampPort);
+	ADIDigitalIn lTilter(lTilterPort);
+	ADIDigitalIn rTilter(rTilterPort);
+
+	Rotation armRot(armRotPort);
+  armRot.reverse();
+
+	Task armControlTask(armControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Arm Control Task");
 }
 
 /**

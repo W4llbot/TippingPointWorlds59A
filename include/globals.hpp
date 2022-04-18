@@ -10,21 +10,21 @@
 #define BRPort 2
 
 // Mech Ports
-#define armPort 1
+#define armPort 8
 #define intakePort 10
 
 // Pneumatic Ports
-#define tiltPort 6
-#define tiltClampPort {{7, 8}}
-#define armClampPort {{7, 4}}
+#define needleTilterPort 3
+#define needlePort 4
+#define clampPort 5
+#define lTilterPort 1
+#define rTilterPort 2
 
 // Sensor ports
-#define armLimitPort {7, 5}
-#define tiltLimitPort {7, 6}
-#define potentiometerPort 1
+#define armRotPort 1
 #define encdRPort 7
 //{SMART_PORT, PORT_TOP, PORT_BOTTOM}
-#define encdSPort {7,1,2}
+#define encdSPort 1
 #define imuPort 11
 
 #endif
