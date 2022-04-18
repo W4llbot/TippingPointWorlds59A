@@ -15,7 +15,7 @@ void initialize() {
 	Motor BR(BRPort, E_MOTOR_GEARSET_06, false, E_MOTOR_ENCODER_DEGREES);
 
 	Motor intake(intakePort, E_MOTOR_GEARSET_06, true, E_MOTOR_ENCODER_DEGREES);
-	Motor arm(armPort, E_MOTOR_GEARSET_36, true, E_MOTOR_ENCODER_DEGREES);
+	Motor arm(armPort, E_MOTOR_GEARSET_36, false, E_MOTOR_ENCODER_DEGREES);
 
 	ADIDigitalIn needleTilter(needleTilterPort);
 	ADIDigitalIn needle(needlePort);
@@ -94,6 +94,7 @@ void opcontrol() {
 
 	Controller master(E_CONTROLLER_MASTER);
 	bool tankDrive = true;
+	int armPos = 0;
 	while(true) {
 		double left, right;
 		if(master.get_digital_new_press(DIGITAL_Y)) tankDrive = !tankDrive;
@@ -122,6 +123,9 @@ void opcontrol() {
 		if(master.get_digital_new_press(DIGITAL_DOWN)) toggleClampState();
 		if(master.get_digital_new_press(DIGITAL_X)) toggleNeedleTilterState();
 		if(master.get_digital_new_press(DIGITAL_B)) toggleNeedleState();
+
+		if(master.get_digital_new_press(DIGITAL_L1) && armPos < 5) setArmPos(++armPos);
+		else if(master.get_digital_new_press(DIGITAL_L2) && armPos > 0) setArmPos(--armPos);
 
 
 		delay(5);

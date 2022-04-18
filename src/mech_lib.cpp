@@ -1,13 +1,20 @@
 #include "main.h"
 
 // Arm control
-const double armHeights[] = {3648, 1860, 2400};
-double armTarg = armHeights[0], armKP = 0.5;
+
+const double armHeights[] = {3648, 6531, 8895, 10416, 14142};
+double armTarg = armHeights[0], armUKP = 0.10, armDKP= 0.05, armKD = 0, prevArmError = 0, armPower = 0;
 bool needleState = LOW, needleTilterState = HIGH, clampState = LOW;
+
+double abscap(double x, double abscap){
+  if(x > abscap) return abscap;
+  else if(x < -abscap) return -abscap;
+  else return x;
+}
 
 void armControl(void*ignore) {
   Motor arm(armPort);
-  // arm.set_brake_mode(E_MOTOR_BRAKE_HOLD);
+  arm.set_brake_mode(E_MOTOR_BRAKE_HOLD);
   ADIDigitalOut needleTilter(needleTilterPort);
   ADIDigitalOut needle(needlePort);
   ADIDigitalOut clamp(clampPort);
@@ -15,7 +22,13 @@ void armControl(void*ignore) {
 
   while(true) {
     double armError = armTarg - armRot.get_position();
-    // arm.move(armError*armKP);
+    double deltaError = armError - prevArmError;
+    double targArmPower = (armError>0?armError*armUKP : armError*armDKP) + deltaError*armKD;
+    // armPower += abscap(targArmPower, 10);
+
+    arm.move(targArmPower);
+
+    prevArmError = armError;
     printf("Target: %f, Potentiometer: %d, Error: %f\n", armTarg, armRot.get_position(), armError);
 
     needle.set_value(needleState);
