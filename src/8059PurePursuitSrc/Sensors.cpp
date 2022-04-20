@@ -15,7 +15,7 @@ void sensors(void * ignore){
    Motor BR (BRPort);
    Imu imu(imuPort);
    ADIEncoder encoderR(encdRPort, encdRPort+1, false);
-   ADIEncoder encoderS(encdSPort,false);
+   ADIEncoder encoderS(encdSPort, encdSPort+1, false);
    bool calibrated = false;
    int start = millis();
   while(true){

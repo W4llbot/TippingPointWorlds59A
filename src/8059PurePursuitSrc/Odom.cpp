@@ -33,7 +33,7 @@ void Odometry(void * ignore){
                               sin(-avgBearing)*localOffset.getX() + cos(-avgBearing)*localOffset.getY());
     position = position + rotatedOffset;
 
-    // if(count++ % 100 == 0) printf("X: %.2f, Y: %.2f, bearing: %.2f\n", position.getX(), position.getY(), bearing/toRad);
+    if(count++ % 100 == 0) printf("X: %.2f, Y: %.2f, bearing: %.2f\n", position.getX(), position.getY(), bearing/toRad);
 
 
     master.print(2, 0, "%.2f, %.2f, %.2f          ", position.getX(), position.getY(), bearing/toRad);
