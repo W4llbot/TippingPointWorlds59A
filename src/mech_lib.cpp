@@ -3,14 +3,8 @@
 // Arm control
 
 const double armHeights[] = {3648, 6531, 8895, 10416, 14142};
-double armTarg = armHeights[0], armUKP = 0.10, armDKP= 0.05, armKD = 0, prevArmError = 0, armPower = 0;
+double armTarg = armHeights[0], armUKP = 0.03 , armDKP= 0.1, armKD = 0, prevArmError = 0, armPower = 0;
 bool needleState = LOW, needleTilterState = HIGH, clampState = LOW;
-
-double abscap(double x, double abscap){
-  if(x > abscap) return abscap;
-  else if(x < -abscap) return -abscap;
-  else return x;
-}
 
 void armControl(void*ignore) {
   Motor arm(armPort);
@@ -19,6 +13,8 @@ void armControl(void*ignore) {
   ADIDigitalOut needle(needlePort);
   ADIDigitalOut clamp(clampPort);
   Rotation armRot(armRotPort);
+
+  Controller master(E_CONTROLLER_MASTER);
 
   while(true) {
     double armError = armTarg - armRot.get_position();
@@ -30,6 +26,7 @@ void armControl(void*ignore) {
 
     prevArmError = armError;
     printf("Target: %f, Potentiometer: %d, Error: %f\n", armTarg, armRot.get_position(), armError);
+    master.print(0, 2, "torque/Nm: %.5f", arm.get_torque());
 
     needle.set_value(needleState);
     needleTilter.set_value(needleTilterState);

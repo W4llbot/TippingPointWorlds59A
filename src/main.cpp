@@ -124,7 +124,7 @@ void opcontrol() {
 		if(master.get_digital_new_press(DIGITAL_X)) toggleNeedleTilterState();
 		if(master.get_digital_new_press(DIGITAL_B)) toggleNeedleState();
 
-		if(master.get_digital_new_press(DIGITAL_L1) && armPos < 5) setArmPos(++armPos);
+		if(master.get_digital_new_press(DIGITAL_L1) && armPos < 4) setArmPos(++armPos);
 		else if(master.get_digital_new_press(DIGITAL_L2) && armPos > 0) setArmPos(--armPos);
 
 

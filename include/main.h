@@ -37,6 +37,7 @@
 #include "api.h"
 #include "mech_lib.hpp"
 #include "globals.hpp"
+#include "8059PurePursuitInclude/api.hpp"
 
 /**
  * You should add more #includes here
