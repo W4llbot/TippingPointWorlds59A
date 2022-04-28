@@ -26,9 +26,8 @@
 // Sensor ports
 #define imuPort 11
 #define armRotPort 1
+#define clampLimitPort 6
 #define encdRPort 7
 #define encdSPort 1
-
-
 
 #endif

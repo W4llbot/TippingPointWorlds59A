@@ -15,25 +15,22 @@ void initialize() {
 	Motor BR(BRPort, E_MOTOR_GEARSET_06, false, E_MOTOR_ENCODER_DEGREES);
 
 	Motor intake(intakePort, E_MOTOR_GEARSET_06, true, E_MOTOR_ENCODER_DEGREES);
-	Motor arm(armPort, E_MOTOR_GEARSET_36, false, E_MOTOR_ENCODER_DEGREES);
+	Motor arm(armPort, E_MOTOR_GEARSET_36, true, E_MOTOR_ENCODER_DEGREES);
 
-	ADIDigitalIn needleTilter(needleTilterPort);
-	ADIDigitalIn needle(needlePort);
-	ADIDigitalIn clamp(clampPort);
-	ADIDigitalIn lTilter(lTilterPort);
-	ADIDigitalIn rTilter(rTilterPort);
+  Rotation armRot(armRotPort);
+  ADIDigitalIn clampLimit(clampLimitPort);
 
-	Rotation armRot(armRotPort);
+	ADIDigitalOut needleTilter(needleTilterPort);
+	ADIDigitalOut needle(needlePort);
+	ADIDigitalOut clamp(clampPort);
+	ADIDigitalOut lTilter(lTilterPort);
+	ADIDigitalOut rTilter(rTilterPort);
+
   armRot.reverse();
 
 	Task armControlTask(armControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Arm Control Task");
-	Task tilterControlTask(tilterControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Arm Control Task");
+	// Task tilterControlTask(tilterControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Arm Control Task");
 	Task intakeTask(intakeControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Intake Control Task");
-
-	Task sensorTask(sensors, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Sensor Task");
-	delay(100);
-	Task odometryTask(Odometry, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Odom Task");
-	Task debugTask(Debug, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Odom Task");
 }
 
 /**
@@ -65,12 +62,7 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {
-
-	Task controlTask(PPControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "PP Task");
-
-	baseMove(30);
-}
+void autonomous() {}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -129,12 +121,12 @@ void opcontrol() {
 
 		setIntake((master.get_digital(DIGITAL_R1) - master.get_digital(DIGITAL_R2))*127);
 
-		if(master.get_digital_new_press(DIGITAL_UP)) toggleTilterState();
+		// if(master.get_digital_new_press(DIGITAL_UP)) toggleTilterState();
 		if(master.get_digital_new_press(DIGITAL_DOWN)) toggleClampState();
 		if(master.get_digital_new_press(DIGITAL_X)) toggleNeedleTilterState();
 		if(master.get_digital_new_press(DIGITAL_B)) toggleNeedleState();
 
-		if(master.get_digital_new_press(DIGITAL_L1) && armPos < 4) setArmPos(++armPos);
+		if(master.get_digital_new_press(DIGITAL_L1) && armPos < 5) setArmPos(++armPos);
 		else if(master.get_digital_new_press(DIGITAL_L2) && armPos > 0) setArmPos(--armPos);
 
 

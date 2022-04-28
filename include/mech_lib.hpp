@@ -12,9 +12,9 @@ void toggleNeedleTilterState();
 void setClampState(bool state);
 void toggleClampState();
 
-void tilterControl(void*ignore);
-void setTilterState(bool state);
-void toggleTilterState();
+// void tilterControl(void*ignore);
+// void setTilterState(bool state);
+// void toggleTilterState();
 
 void intakeControl(void*ignore);
 void setIntake(double pow);

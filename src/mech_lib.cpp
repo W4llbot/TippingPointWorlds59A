@@ -2,8 +2,8 @@
 
 // Arm control
 
-const double armHeights[] = {3648, 6331, 8595, 10416, 13700};
-double armTarg = armHeights[0], armUKP = 0.03 , armDKP= 0.1, armKD = 0, prevArmError = 0, armPower = 0;
+const double armHeights[] = {3000, 6331, 8595, 10416, 13700};
+double armTarg = armHeights[0], armUKP = 0.055, armDKP= 0.045, armKD = 0.01, prevArmError = 0, armPower = 0;
 bool needleState = LOW, needleTilterState = HIGH, clampState = LOW;
 
 void armControl(void*ignore) {
@@ -12,6 +12,7 @@ void armControl(void*ignore) {
   ADIDigitalOut needleTilter(needleTilterPort);
   ADIDigitalOut needle(needlePort);
   ADIDigitalOut clamp(clampPort);
+  ADIDigitalIn clampLimit(clampLimitPort);
   Rotation armRot(armRotPort);
 
   Controller master(E_CONTROLLER_MASTER);
@@ -19,17 +20,18 @@ void armControl(void*ignore) {
   while(true) {
     double armError = armTarg - armRot.get_position();
     double deltaError = armError - prevArmError;
-    double targArmPower = (armError>0?armError*armUKP : armError*armDKP) + deltaError*armKD;
+    double targArmPower = (armError>0?armError*armUKP : armError*armDKP) + deltaError*armKD + 20;
     // armPower += abscap(targArmPower, 10);
-
-    arm.move(targArmPower);
+    double armPower = fmax(targArmPower, -800);
+    arm.move(armPower);
 
     prevArmError = armError;
-    printf("Target: %f, Potentiometer: %d, Error: %f\n", armTarg, armRot.get_position(), armError);
-    master.print(0, 2, "torque/Nm: %.5f", arm.get_torque());
+    // printf("Target: %f, Potentiometer: %d, Error: %f\n", armTarg, armRot.get_position(), armError);
+    // master.print(0, 2, "torque/Nm: %.5f", arm.get_torque());
 
     needle.set_value(needleState);
     needleTilter.set_value(needleTilterState);
+    if(clampLimit.get_new_press()) clampState = HIGH;
     clamp.set_value(clampState);
 
     delay(5);
@@ -48,21 +50,21 @@ void setClampState(bool state) {clampState = state;}
 void toggleClampState() {clampState = !clampState;}
 
 // Tilter control
-bool tilterState = LOW;
-void tilterControl(void*ignore) {
-  ADIDigitalOut lTilter(lTilterPort);
-	ADIDigitalOut rTilter(rTilterPort);
-
-  while(true) {
-    lTilter.set_value(tilterState);
-    rTilter.set_value(tilterState);
-
-    delay(5);
-  }
-}
-
-void setTilterState(bool state) {tilterState = state;}
-void toggleTilterState() {tilterState = !tilterState;}
+// bool tilterState = LOW;
+// void tilterControl(void*ignore) {
+//   ADIDigitalOut lTilter(lTilterPort);
+// 	ADIDigitalOut rTilter(rTilterPort);
+//
+//   while(true) {
+//     lTilter.set_value(tilterState);
+//     rTilter.set_value(tilterState);
+//
+//     delay(5);
+//   }
+// }
+//
+// void setTilterState(bool state) {tilterState = state;}
+// void toggleTilterState() {tilterState = !tilterState;}
 
 // Intake control
 double intakeTarg = 0;
