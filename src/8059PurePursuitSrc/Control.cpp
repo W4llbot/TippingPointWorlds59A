@@ -2,11 +2,12 @@
 #define kV 1375
 #define kA 140500
 #define kP 1000
-#define DEFAULT_TURN_KP 0.122
+#define DEFAULT_TURN_KP 0.2
 // #define kA 50000
 // #define kP 1000
 
 double turnKP = DEFAULT_TURN_KP;
+double maxRamp = 8.0 * RPMToInPerMs;
 
 bool enablePP = false;
 bool reverse = false;
@@ -16,7 +17,7 @@ int closestPointIndex = 0;
 double lastFracIndex = 0;
 double targBearing = 0;
 
-bool enableL = false, enableR = false;
+bool enableL = true, enableR = true;
 
 
 void drive(double l, double r){
@@ -75,7 +76,7 @@ double calcBaseTurn(double x, double y, bool rev) {
 
 void waitTurn(double cutoff) {
   double start = millis();
-  while((fabs(targBearing - bearing)*toDeg > TURN_LEEWAY || fabs(measuredVL*inPerMsToRPM) > 5 || fabs(measuredVR*inPerMsToRPM) > 5) && millis() - start < cutoff) delay(5);
+  while((fabs(targBearing - bearing)*toDeg > TURN_LEEWAY || fabs(measuredVL*inPerMsToRPM) > 3 || fabs(measuredVR*inPerMsToRPM) > 3) && millis() - start < cutoff) delay(5);
   printf("I stopped :)\n\n");
 }
 
@@ -193,9 +194,12 @@ void PPControl(void * ignore){
       * constantly feed this value through the rate limiter to get the acceleration-limited target velocity.
       */
       double targVClosest = reverse ? -path.getTargV(closestPointIndex) : path.getTargV(closestPointIndex);
+      double deltaV = targVClosest - targV;
+      bool isAccel = fabs(targVClosest) > fabs(targV);
       // rate limiter
-      targV = targVClosest;
-      // targV = targV + abscap(targVClosest, globalMaxA); //might use v + abscap instead of targV + abscap?
+      // targV = targVClosest;
+
+      targV = isAccel ? targV + abscap(deltaV, maxRamp) : targVClosest; //might use v + abscap instead of targV + abscap?
       // if(count % 10 == 0) printf("TargV: %.5f, MAXV: %.5f\n", targV, globalMaxV);
       targVL = targV*(2 + moveCurvature*2*R_DIS)/2;
       targVR = targV*(2 - moveCurvature*2*R_DIS)/2;

@@ -9,7 +9,7 @@
  * 3: Power (print powerL & powerR)
  * 4: Raw encoder values (print raw encdL & encdR)
  */
-#define DEBUG_MODE -1
+#define DEBUG_MODE 1
 void printVector(std::vector<double> vd);
 void posPrintTerminal();
 void posPrintMaster();

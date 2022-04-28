@@ -24,7 +24,7 @@
 #define rTilterPort {{expanderPort, 2}}
 
 // Sensor ports
-#define imuPort 11
+#define imuPort 4
 #define armRotPort 1
 #define clampLimitPort 6
 #define encdRPort 7

@@ -31,6 +31,9 @@ void initialize() {
 	Task armControlTask(armControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Arm Control Task");
 	// Task tilterControlTask(tilterControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Arm Control Task");
 	Task intakeTask(intakeControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Intake Control Task");
+  Task sensorsTask(sensors, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Debug Task");
+  // Task debugTask(Debug, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Debug Task");
+
 }
 
 /**
@@ -62,7 +65,25 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+  double start = millis();
+	// setArmPos(2);
+	// setOffset(-133.5);
+	// baseTurn(-133.5);
+	delay(100);
+  Task odometryTask(Odometry, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Odom Task");
+	Task controlTask(PPControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "PP Task");
+
+	setMaxRPMV(500);
+	setArmHeight(1400);
+
+  double smooth = 0.75;
+  // basePP({position, Node(24, 72)}, 1-smooth, smooth, 18);
+  waitPP(0);
+  enableBase(true, true);
+  baseTurn(-90);
+  waitTurn(10000);
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
