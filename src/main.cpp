@@ -32,7 +32,7 @@ void initialize() {
 	// Task tilterControlTask(tilterControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Arm Control Task");
 	Task intakeTask(intakeControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Intake Control Task");
   Task sensorsTask(sensors, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Debug Task");
-  // Task debugTask(Debug, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Debug Task");
+  Task debugTask(Debug, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Debug Task");
 
 }
 
@@ -68,21 +68,87 @@ void competition_initialize() {}
 void autonomous() {
   double start = millis();
 	// setArmPos(2);
-	// setOffset(-133.5);
-	// baseTurn(-133.5);
+	setOffset(30);
+	baseTurn(30);
 	delay(100);
   Task odometryTask(Odometry, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Odom Task");
 	Task controlTask(PPControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "PP Task");
 
 	setMaxRPMV(500);
-	setArmHeight(1400);
+	// setArmHeight(1400);
 
   double smooth = 0.75;
   // basePP({position, Node(24, 72)}, 1-smooth, smooth, 18);
-  waitPP(0);
-  enableBase(true, true);
-  baseTurn(-90);
-  waitTurn(10000);
+  // waitPP(0);
+  // enableBase(true, true);
+  // baseTurn(-90);
+  // waitTurn(10000);
+
+	baseMove(-1.5);
+	delay(300);
+	waitPP(1000);
+
+	baseMove(8.5);
+	waitPP(1000);
+
+	setNeedleState(HIGH);
+	delay(500);
+	setArmPos(1);
+	setNeedleTilterState(LOW);
+	delay(500);
+	setNeedleState(LOW);
+	delay(500);
+
+	setArmPos(0);
+	setNeedleTilterState(HIGH);
+	baseMove(13);
+	waitPP(1000);
+
+	baseMove(-20);
+	waitPP(1000);
+
+	enableBase(true, false);
+	baseTurn(115);
+	waitTurn(1500);
+
+	// enableBase(false, true);
+	// baseTurn(150);
+	// waitTurn(1500);
+
+	setClampState(LOW);
+	basePP({position, Node(-8, 59)}, 1-smooth, smooth, 14, true);
+	waitPP(2000);
+	setClampState(HIGH);
+
+	baseMove(14);
+	waitPP(2000);
+
+	// baseTurn(calcBaseTurn(-24, 0, true));
+	// waitTurn(1500);
+
+
+	enableBase(true, true);
+	baseTurn(360);
+	waitTurn(1500);
+
+	setClampState(LOW);
+	delay(200);
+
+	setNeedleState(HIGH);
+	setArmPos(1);
+	setNeedleTilterState(LOW);
+	basePP({position, Node(-15, (120-22))}, 1-smooth, smooth, 16, false);
+	waitPP(3000);
+	setNeedleState(LOW);
+
+	// baseTurn(calcBaseTurn(-15, 120, false));
+	// waitTurn(1000);
+	// delay(300);
+	// setNeedleState(LOW);
+
+	// ygoal -10 59
+
+	// opp goal -13 120
 }
 
 /**
@@ -147,7 +213,7 @@ void opcontrol() {
 		if(master.get_digital_new_press(DIGITAL_X)) toggleNeedleTilterState();
 		if(master.get_digital_new_press(DIGITAL_B)) toggleNeedleState();
 
-		if(master.get_digital_new_press(DIGITAL_L1) && armPos < 5) setArmPos(++armPos);
+		if(master.get_digital_new_press(DIGITAL_L1) && armPos < 4) setArmPos(++armPos);
 		else if(master.get_digital_new_press(DIGITAL_L2) && armPos > 0) setArmPos(--armPos);
 
 

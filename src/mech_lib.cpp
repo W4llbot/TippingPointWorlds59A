@@ -2,7 +2,7 @@
 
 // Arm control
 
-const double armHeights[] = {3000, 6331, 8595, 10416, 13700};
+const double armHeights[] = {3000, 5850, 8150, 10416, 13700};
 double armTarg = armHeights[0], armUKP = 0.055, armDKP= 0.045, armKD = 0.01, prevArmError = 0, armPower = 0;
 bool needleState = LOW, needleTilterState = HIGH, clampState = LOW;
 
@@ -26,7 +26,7 @@ void armControl(void*ignore) {
     arm.move(armPower);
 
     prevArmError = armError;
-    // printf("Target: %f, Potentiometer: %d, Error: %f\n", armTarg, armRot.get_position(), armError);
+    printf("Target: %f, Potentiometer: %d, Error: %f\n", armTarg, armRot.get_position(), armError);
     // master.print(0, 2, "torque/Nm: %.5f", arm.get_torque());
 
     needle.set_value(needleState);
