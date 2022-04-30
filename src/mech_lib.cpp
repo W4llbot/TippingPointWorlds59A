@@ -2,9 +2,10 @@
 
 // Arm control
 
-const double armHeights[] = {3000, 5850, 8150, 10416, 13700};
-double armTarg = armHeights[0], armUKP = 0.055, armDKP= 0.045, armKD = 0.01, prevArmError = 0, armPower = 0;
+const double armHeights[] = {3000, 6200, 8150, 10416, 13700};
+double armTarg = armHeights[0], armUKP = 0.1, armDKP= 0.045, armKD = 0.01, prevArmError = 0, armPower = 0;
 bool needleState = LOW, needleTilterState = HIGH, clampState = LOW;
+bool armManual = false;
 
 void armControl(void*ignore) {
   Motor arm(armPort);
@@ -22,7 +23,10 @@ void armControl(void*ignore) {
     double deltaError = armError - prevArmError;
     double targArmPower = (armError>0?armError*armUKP : armError*armDKP) + deltaError*armKD + 20;
     // armPower += abscap(targArmPower, 10);
-    double armPower = fmax(targArmPower, -800);
+
+    double armPower;
+    if(armManual) armPower = (master.get_digital(DIGITAL_L1) - master.get_digital(DIGITAL_L2))*127;
+    else armPower = fmax(targArmPower, -800);
     arm.move(armPower);
 
     prevArmError = armError;
@@ -39,12 +43,20 @@ void armControl(void*ignore) {
 }
 void setArmHeight(double height) {armTarg = height;}
 void setArmPos(int pos) {armTarg = armHeights[pos];}
+void toggleArmManual() {
+  Rotation armRot(armRotPort);
+  armManual = !armManual;
+  if(!armManual) setArmHeight(armRot.get_position());
+}
 
 void setNeedleState(bool state) {needleState = state;}
 void toggleNeedleState() {needleState = !needleState;}
 
-void setNeedleTilterState(bool state) {needleTilterState = state;}
-void toggleNeedleTilterState() {needleTilterState = !needleTilterState;}
+void setNeedleTilterState(bool state) {
+  needleTilterState = state;
+  needleState = !state;
+}
+void toggleNeedleTilterState() {setNeedleTilterState(!needleTilterState);}
 
 void setClampState(bool state) {clampState = state;}
 void toggleClampState() {clampState = !clampState;}

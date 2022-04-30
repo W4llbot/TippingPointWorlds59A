@@ -4,6 +4,7 @@
 void armControl(void*ignore);
 void setArmHeight(double height);
 void setArmPos(int pos);
+void toggleArmManual();
 
 void setNeedleState(bool state);
 void toggleNeedleState();

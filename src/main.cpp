@@ -84,6 +84,8 @@ void autonomous() {
   // baseTurn(-90);
   // waitTurn(10000);
 
+	setIntake(127);
+	delay(300);
 	baseMove(-1.5);
 	delay(300);
 	waitPP(1000);
@@ -91,11 +93,12 @@ void autonomous() {
 	baseMove(8.5);
 	waitPP(1000);
 
+	delay(300);
 	setNeedleState(HIGH);
-	delay(500);
 	setArmPos(1);
+	delay(700);
 	setNeedleTilterState(LOW);
-	delay(500);
+	delay(700);
 	setNeedleState(LOW);
 	delay(500);
 
@@ -116,7 +119,7 @@ void autonomous() {
 	// waitTurn(1500);
 
 	setClampState(LOW);
-	basePP({position, Node(-8, 59)}, 1-smooth, smooth, 14, true);
+	basePP({position, Node(-8, 59)}, 1-smooth, smooth, 12, true);
 	waitPP(2000);
 	setClampState(HIGH);
 
@@ -137,7 +140,7 @@ void autonomous() {
 	setNeedleState(HIGH);
 	setArmPos(1);
 	setNeedleTilterState(LOW);
-	basePP({position, Node(-15, (120-22))}, 1-smooth, smooth, 16, false);
+	basePP({position, Node(-15.2, (120-24))}, 1-smooth, smooth, 16, false);
 	waitPP(3000);
 	setNeedleState(LOW);
 
@@ -183,11 +186,11 @@ void opcontrol() {
 
 	Controller master(E_CONTROLLER_MASTER);
 	bool tankDrive = true;
+	bool manual = false;
 	int armPos = 0;
 	while(true) {
 		double left, right;
 		if(master.get_digital_new_press(DIGITAL_Y)) tankDrive = !tankDrive;
-
 		if(tankDrive) {
 			left = master.get_analog(ANALOG_LEFT_Y);
 			right = master.get_analog(ANALOG_RIGHT_Y);
@@ -197,7 +200,6 @@ void opcontrol() {
 			left = power + turn;
 			right = power - turn;
 		}
-
 
 		FL.move(left);
 		ML.move(left);
@@ -213,9 +215,11 @@ void opcontrol() {
 		if(master.get_digital_new_press(DIGITAL_X)) toggleNeedleTilterState();
 		if(master.get_digital_new_press(DIGITAL_B)) toggleNeedleState();
 
+		if(master.get_digital_new_press(DIGITAL_A)) manual = !manual;
+
+		if(master.get_digital_new_press(DIGITAL_A)) toggleArmManual();
 		if(master.get_digital_new_press(DIGITAL_L1) && armPos < 4) setArmPos(++armPos);
 		else if(master.get_digital_new_press(DIGITAL_L2) && armPos > 0) setArmPos(--armPos);
-
 
 		delay(5);
   }
