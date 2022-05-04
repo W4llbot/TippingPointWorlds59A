@@ -20,5 +20,9 @@ void toggleClampState();
 void intakeControl(void*ignore);
 void setIntake(double pow);
 
+void hookControl(void*ignore);
+void setHookState(bool state);
+void toggleHookState();
+
 
 #endif

@@ -14,7 +14,7 @@ void initialize() {
 	Motor MR(MRPort, E_MOTOR_GEARSET_06, true, E_MOTOR_ENCODER_DEGREES);
 	Motor BR(BRPort, E_MOTOR_GEARSET_06, false, E_MOTOR_ENCODER_DEGREES);
 
-	Motor intake(intakePort, E_MOTOR_GEARSET_06, true, E_MOTOR_ENCODER_DEGREES);
+	Motor intake(intakePort, E_MOTOR_GEARSET_06, false, E_MOTOR_ENCODER_DEGREES);
 	Motor arm(armPort, E_MOTOR_GEARSET_36, true, E_MOTOR_ENCODER_DEGREES);
 
   Rotation armRot(armRotPort);
@@ -23,14 +23,16 @@ void initialize() {
 	ADIDigitalOut needleTilter(needleTilterPort);
 	ADIDigitalOut needle(needlePort);
 	ADIDigitalOut clamp(clampPort);
-	ADIDigitalOut lTilter(lTilterPort);
-	ADIDigitalOut rTilter(rTilterPort);
+	ADIDigitalOut hook(hookPort);
+	// ADIDigitalOut lTilter(lTilterPort);
+	// ADIDigitalOut rTilter(rTilterPort);
 
   armRot.reverse();
 
 	Task armControlTask(armControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Arm Control Task");
 	// Task tilterControlTask(tilterControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Arm Control Task");
-	Task intakeTask(intakeControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Intake Control Task");
+	Task intakeControlTask(intakeControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Intake Control Task");
+	Task hookControlTask(hookControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Intake Control Task");
   Task sensorsTask(sensors, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Debug Task");
   Task debugTask(Debug, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Debug Task");
 
@@ -65,8 +67,8 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {
-  double start = millis();
+void red() {
+	double start = millis();
 	// setArmPos(2);
 	setOffset(30);
 	baseTurn(30);
@@ -84,6 +86,8 @@ void autonomous() {
   // baseTurn(-90);
   // waitTurn(10000);
 
+	setIntake(-127);
+	delay(300);
 	setIntake(127);
 	delay(300);
 	baseMove(-1.5);
@@ -93,14 +97,97 @@ void autonomous() {
 	baseMove(8.5);
 	waitPP(1000);
 
-	delay(300);
 	setNeedleState(HIGH);
 	setArmPos(1);
 	delay(700);
 	setNeedleTilterState(LOW);
 	delay(700);
 	setNeedleState(LOW);
-	delay(500);
+	delay(1000);
+
+	setArmPos(0);
+	setNeedleTilterState(HIGH);
+	baseMove(13);
+	waitPP(1000);
+
+	baseMove(-20);
+	waitPP(1000);
+
+	enableBase(true, false);
+	baseTurn(115);
+	waitTurn(1500);
+
+	// enableBase(false, true);
+	// baseTurn(150);
+	// waitTurn(1500);
+
+	setClampState(LOW);
+	basePP({position, Node(-8, 59)}, 1-smooth, smooth, 14, true);
+	waitPP(2000);
+	setClampState(HIGH);
+
+	baseMove(14);
+	waitPP(2000);
+
+	// baseTurn(calcBaseTurn(-24, 0, true));
+	// waitTurn(1500);
+
+
+	enableBase(true, true);
+	baseTurn(360);
+	waitTurn(1500);
+
+	setClampState(LOW);
+	delay(300);
+	setClampState(LOW);
+
+	setNeedleState(HIGH);
+	setArmPos(1);
+	setNeedleTilterState(LOW);
+	basePP({position, Node(-12.7, (120-24))}, 1-smooth, smooth, 14, false);
+	waitPP(3000);
+
+	while(start - millis() < 14900);
+	setNeedleState(LOW);
+}
+
+void blue() {
+	double start = millis();
+	// setArmPos(2);
+	setOffset(30);
+	baseTurn(30);
+	delay(100);
+  Task odometryTask(Odometry, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Odom Task");
+	Task controlTask(PPControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "PP Task");
+
+	setMaxRPMV(500);
+	// setArmHeight(1400);
+
+  double smooth = 0.75;
+  // basePP({position, Node(24, 72)}, 1-smooth, smooth, 18);
+  // waitPP(0);
+  // enableBase(true, true);
+  // baseTurn(-90);
+  // waitTurn(10000);
+
+	setIntake(-127);
+	delay(300);
+	setIntake(127);
+	delay(300);
+	baseMove(-1.5);
+	delay(300);
+	waitPP(1000);
+
+	baseMove(8.5);
+	waitPP(1000);
+
+	setNeedleState(HIGH);
+	setArmPos(1);
+	delay(700);
+	setNeedleTilterState(LOW);
+	delay(700);
+	setNeedleState(LOW);
+	delay(1000);
 
 	setArmPos(0);
 	setNeedleTilterState(HIGH);
@@ -135,23 +222,19 @@ void autonomous() {
 	waitTurn(1500);
 
 	setClampState(LOW);
-	delay(200);
+	delay(300);
+	setClampState(LOW);
 
 	setNeedleState(HIGH);
 	setArmPos(1);
 	setNeedleTilterState(LOW);
-	basePP({position, Node(-15.2, (120-24))}, 1-smooth, smooth, 16, false);
+	basePP({position, Node(-12.7, (120-23.5))}, 1-smooth, smooth, 16, false);
 	waitPP(3000);
 	setNeedleState(LOW);
+}
 
-	// baseTurn(calcBaseTurn(-15, 120, false));
-	// waitTurn(1000);
-	// delay(300);
-	// setNeedleState(LOW);
-
-	// ygoal -10 59
-
-	// opp goal -13 120
+void autonomous() {
+	red();
 }
 
 /**
@@ -214,6 +297,7 @@ void opcontrol() {
 		if(master.get_digital_new_press(DIGITAL_DOWN)) toggleClampState();
 		if(master.get_digital_new_press(DIGITAL_X)) toggleNeedleTilterState();
 		if(master.get_digital_new_press(DIGITAL_B)) toggleNeedleState();
+		if(master.get_digital_new_press(DIGITAL_UP)) toggleHookState();
 
 		if(master.get_digital_new_press(DIGITAL_A)) manual = !manual;
 

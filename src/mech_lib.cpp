@@ -2,8 +2,8 @@
 
 // Arm control
 
-const double armHeights[] = {3000, 6200, 8150, 10416, 13700};
-double armTarg = armHeights[0], armUKP = 0.1, armDKP= 0.045, armKD = 0.01, prevArmError = 0, armPower = 0;
+const double armHeights[] = {3400, 6100, 8150, 10416, 13000};
+double armTarg = armHeights[0], armUKP = 0.05, armDKP= 0.05, armKI = 0.00003, armKD = 0.5, prevArmError = 0, armPower = 0;
 bool needleState = LOW, needleTilterState = HIGH, clampState = LOW;
 bool armManual = false;
 
@@ -18,19 +18,23 @@ void armControl(void*ignore) {
 
   Controller master(E_CONTROLLER_MASTER);
 
+  double armErrorSum = 0;
   while(true) {
     double armError = armTarg - armRot.get_position();
+    armErrorSum += armError * dT;
+    if(fabs(armError) < 100) armErrorSum = 0;
+    if(fabs(armError) > 2000) armErrorSum = 0;
     double deltaError = armError - prevArmError;
-    double targArmPower = (armError>0?armError*armUKP : armError*armDKP) + deltaError*armKD + 20;
+    double targArmPower = (armError>0?armError*armUKP : armError*armDKP) + armErrorSum * armKI + deltaError*armKD + 20;
     // armPower += abscap(targArmPower, 10);
 
     double armPower;
     if(armManual) armPower = (master.get_digital(DIGITAL_L1) - master.get_digital(DIGITAL_L2))*127;
     else armPower = fmax(targArmPower, -800);
-    arm.move(armPower);
+    arm.move(armPower-20);
 
     prevArmError = armError;
-    printf("Target: %f, Potentiometer: %d, Error: %f\n", armTarg, armRot.get_position(), armError);
+    printf("Target: %f, Potentiometer: %d, Error: %f, integral: %.2f, torque: %.2f\n", armTarg, armRot.get_position(), armError, armErrorSum*armKI, arm.get_torque());
     // master.print(0, 2, "torque/Nm: %.5f", arm.get_torque());
 
     needle.set_value(needleState);
@@ -89,4 +93,22 @@ void intakeControl(void*ignore) {
   }
 }
 
-void setIntake(double pow) {intakeTarg = pow;}
+void setIntake(double pow) {
+  if(pow > 100) setNeedleState(LOW);
+  intakeTarg = pow;
+}
+
+// Hook control
+bool hookState = LOW;
+void hookControl(void * ignore) {
+  ADIDigitalOut hook(hookPort);
+
+  while(true) {
+    hook.set_value(hookState);
+    printf("hookState: %d\n", hookState);
+    delay(5);
+  }
+}
+
+void setHookState(bool state) {hookState = state;}
+void toggleHookState() {setHookState(!hookState);}
