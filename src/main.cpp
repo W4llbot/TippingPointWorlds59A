@@ -86,10 +86,13 @@ void red() {
   // baseTurn(-90);
   // waitTurn(10000);
 
+	// setArmPos(1);
+	// setNeedleState(HIGH);
+	// setNeedleTilterState(LOW);
 	setIntake(-127);
 	delay(300);
 	setIntake(127);
-	delay(300);
+	delay(200);
 	baseMove(-1.5);
 	delay(300);
 	waitPP(1000);
@@ -144,11 +147,15 @@ void red() {
 	setNeedleState(HIGH);
 	setArmPos(1);
 	setNeedleTilterState(LOW);
-	basePP({position, Node(-12.7, (120-24))}, 1-smooth, smooth, 14, false);
-	waitPP(3000);
+	basePP({position, Node(-15, (120-23.5))}, 1-smooth, smooth, 13, false);
 
-	while(start - millis() < 14900);
+	while(millis() - start < 14900) {
+		printf("time: %.2fs\n", millis() - start);
+		delay(5);
+	}
 	setNeedleState(LOW);
+	// setIntake(127);
+	printf("program finished in %.2fs", start - millis());
 }
 
 void blue() {
@@ -234,6 +241,7 @@ void blue() {
 }
 
 void autonomous() {
+	setHookState(LOW);
 	red();
 }
 

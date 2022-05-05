@@ -34,7 +34,7 @@ void armControl(void*ignore) {
     arm.move(armPower-20);
 
     prevArmError = armError;
-    printf("Target: %f, Potentiometer: %d, Error: %f, integral: %.2f, torque: %.2f\n", armTarg, armRot.get_position(), armError, armErrorSum*armKI, arm.get_torque());
+    // printf("Target: %f, Potentiometer: %d, Error: %f, integral: %.2f, torque: %.2f\n", armTarg, armRot.get_position(), armError, armErrorSum*armKI, arm.get_torque());
     // master.print(0, 2, "torque/Nm: %.5f", arm.get_torque());
 
     needle.set_value(needleState);
@@ -105,10 +105,13 @@ void hookControl(void * ignore) {
 
   while(true) {
     hook.set_value(hookState);
-    printf("hookState: %d\n", hookState);
+    // printf("hookState: %d\n", hookState);
     delay(5);
   }
 }
 
-void setHookState(bool state) {hookState = state;}
+void setHookState(bool state) {
+  hookState = state;
+  if(state) setArmHeight(4000);
+}
 void toggleHookState() {setHookState(!hookState);}
