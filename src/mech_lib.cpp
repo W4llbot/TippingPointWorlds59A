@@ -2,7 +2,7 @@
 
 // Arm control
 
-const double armHeights[] = {3400, 6100, 8150, 10416, 13000};
+const double armHeights[] = {3400, 6000, 8150, 10416, 13000};
 double armTarg = armHeights[0], armUKP = 0.05, armDKP= 0.05, armKI = 0.00003, armKD = 0.5, prevArmError = 0, armPower = 0;
 bool needleState = LOW, needleTilterState = HIGH, clampState = LOW;
 bool armManual = false;
