@@ -224,7 +224,7 @@ void red() {
 	// waitTurn(1500);
 
 	setClampState(LOW);
-	basePP({position, Node(-8.7, 59)}, 1-smooth, smooth, 14, true);
+	basePP({position, Node(-8.5, 59)}, 1-smooth, smooth, 14, true);
 	waitPP(2000);
 	setClampState(HIGH);
 
@@ -237,7 +237,7 @@ void red() {
 
 	enableBase(true, true);
 	// baseTurn(360);
-  baseTurn(calcBaseTurn(-15, 114, false));
+  baseTurn(calcBaseTurn(-14.5, 114, false));
 	waitTurn(1500);
 
 	setClampState(LOW);
@@ -254,7 +254,7 @@ void red() {
 		printf("time: %.2fs\n", millis() - start);
 		delay(5);
 	}
-  setNeedleState(LOW);
+  // setNeedleState(LOW);
   while(millis() - start < 14990) delay(5);
 	setEnableControl(false);
 	controlTask.remove();
@@ -263,6 +263,8 @@ void red() {
 }
 
 void autonomous() {
+  // Imu imu(imuPort);
+  // imu.reset();
 	// blue: opp goal center and as towards middle as possible
 	// red:: opp goal further and not covering head
 	setHookState(LOW);
