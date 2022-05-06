@@ -67,7 +67,7 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void red() {
+void blue() {
 	double start = millis();
 	// setArmPos(2);
 	setOffset(30);
@@ -165,7 +165,7 @@ void red() {
 	printf("program finished in %.2fs", start - millis());
 }
 
-void blue() {
+void red() {
 	double start = millis();
 	// setArmPos(2);
 	setOffset(30);
@@ -224,7 +224,7 @@ void blue() {
 	// waitTurn(1500);
 
 	setClampState(LOW);
-	basePP({position, Node(-9, 35), Node(-9, 59)}, 1-smooth, smooth, 14, true);
+	basePP({position, Node(-8.7, 59)}, 1-smooth, smooth, 14, true);
 	waitPP(2000);
 	setClampState(HIGH);
 
@@ -237,7 +237,7 @@ void blue() {
 
 	enableBase(true, true);
 	// baseTurn(360);
-  baseTurn(calcBaseTurn(-17, 114, false));
+  baseTurn(calcBaseTurn(-15, 114, false));
 	waitTurn(1500);
 
 	setClampState(LOW);
@@ -247,7 +247,7 @@ void blue() {
 	setNeedleState(HIGH);
 	setArmPos(1);
 	setNeedleTilterState(LOW);
-  baseMove(53.3);
+  baseMove(53.5);
 	// basePP({position, Node(-14.5, (120-23.7))}, 1-smooth, smooth, 13, false);
 
 	while(millis() - start < 14900) {
@@ -266,7 +266,7 @@ void autonomous() {
 	// blue: opp goal center and as towards middle as possible
 	// red:: opp goal further and not covering head
 	setHookState(LOW);
-	blue();
+	red();
 }
 
 /**
