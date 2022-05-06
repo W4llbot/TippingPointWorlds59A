@@ -21,5 +21,6 @@ void waitTurn(double cutoff);
 void resetPP();
 void basePP(std::vector<Node> wps, double p_w_data = DEFAULT_W_DATA, double p_w_smooth = DEFAULT_W_SMOOTH, double p_lookAhead = DEFAULT_LOOK_AHEAD, bool p_reverse = false);
 void waitPP(double cutoff);
+void setEnableControl(bool enable);
 void PPControl(void * ignore);
 #endif

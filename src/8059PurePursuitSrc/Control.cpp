@@ -113,6 +113,10 @@ void waitPP(double cutoff){
   printf("Stopped!!!\n\n");
 }
 
+bool enableControl = true;
+
+void setEnableControl(bool enable) {enableControl = enable;}
+
 void PPControl(void * ignore){
   Node lookAheadNode;
 
@@ -124,7 +128,7 @@ void PPControl(void * ignore){
 
   int count = 0;
 
-  while(competition::is_autonomous()){
+  while(enableControl){
     if(count % 10 == 0) printf("status: %s\t", (enablePP? "enabled": "disabled"));
 
     if(enablePP) {

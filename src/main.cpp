@@ -80,6 +80,7 @@ void red() {
 	// setArmHeight(1400);
 
   double smooth = 0.75;
+	setEnableControl(true);
   // basePP({position, Node(24, 72)}, 1-smooth, smooth, 18);
   // waitPP(0);
   // enableBase(true, true);
@@ -93,11 +94,11 @@ void red() {
 	delay(300);
 	setIntake(127);
 	delay(200);
-	baseMove(-1.5);
+	baseMove(-1);
 	delay(300);
 	waitPP(1000);
 
-	baseMove(8.5);
+	baseMove(8);
 	waitPP(1000);
 
 	setNeedleState(HIGH);
@@ -147,13 +148,19 @@ void red() {
 	setNeedleState(HIGH);
 	setArmPos(1);
 	setNeedleTilterState(LOW);
-	basePP({position, Node(-15, (120-23.5))}, 1-smooth, smooth, 13, false);
+	basePP({position, Node(-14, (120-23.5))}, 1-smooth, smooth, 13, false);
+	waitPP(3000);
+	baseTurn(356);
+	waitTurn(10);
 
 	while(millis() - start < 14900) {
 		printf("time: %.2fs\n", millis() - start);
 		delay(5);
 	}
 	setNeedleState(LOW);
+	while(millis() - start < 14990);
+	controlTask.remove();
+	setEnableControl(false);
 	// setIntake(127);
 	printf("program finished in %.2fs", start - millis());
 }
@@ -171,21 +178,25 @@ void blue() {
 	// setArmHeight(1400);
 
   double smooth = 0.75;
+	setEnableControl(true);
   // basePP({position, Node(24, 72)}, 1-smooth, smooth, 18);
   // waitPP(0);
   // enableBase(true, true);
   // baseTurn(-90);
   // waitTurn(10000);
 
+	// setArmPos(1);
+	// setNeedleState(HIGH);
+	// setNeedleTilterState(LOW);
 	setIntake(-127);
 	delay(300);
 	setIntake(127);
-	delay(300);
-	baseMove(-1.5);
+	delay(200);
+	baseMove(-1);
 	delay(300);
 	waitPP(1000);
 
-	baseMove(8.5);
+	baseMove(7.8);
 	waitPP(1000);
 
 	setNeedleState(HIGH);
@@ -213,7 +224,7 @@ void blue() {
 	// waitTurn(1500);
 
 	setClampState(LOW);
-	basePP({position, Node(-8, 59)}, 1-smooth, smooth, 12, true);
+	basePP({position, Node(-8, 59)}, 1-smooth, smooth, 14, true);
 	waitPP(2000);
 	setClampState(HIGH);
 
@@ -235,12 +246,22 @@ void blue() {
 	setNeedleState(HIGH);
 	setArmPos(1);
 	setNeedleTilterState(LOW);
-	basePP({position, Node(-12.7, (120-23.5))}, 1-smooth, smooth, 16, false);
-	waitPP(3000);
+	basePP({position, Node(-14.5, (120-23.7))}, 1-smooth, smooth, 13, false);
+
+	while(millis() - start < 14900) {
+		printf("time: %.2fs\n", millis() - start);
+		delay(5);
+	}
+	setEnableControl(false);
+	controlTask.remove();
 	setNeedleState(LOW);
+	// setIntake(127);
+	printf("program finished in %.2fs", start - millis());
 }
 
 void autonomous() {
+	// blue: opp goal center and as towards middle as possible
+	// red:: opp goal further and not covering head
 	setHookState(LOW);
 	red();
 }
@@ -276,6 +297,9 @@ void opcontrol() {
 	BR.set_brake_mode(E_MOTOR_BRAKE_BRAKE);
 
 	Controller master(E_CONTROLLER_MASTER);
+
+	setEnableControl(false);
+
 	bool tankDrive = true;
 	bool manual = false;
 	int armPos = 0;
